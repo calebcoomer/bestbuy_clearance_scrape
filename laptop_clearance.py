@@ -1,4 +1,5 @@
 ## import libraries
+import csv
 from time import sleep
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -8,12 +9,6 @@ from selenium.webdriver.common.by import By
 
 ## defining function that will open links
 def openlink(target_link):
-    ##with open(filename, 'r') as file:
-    #link_list = []
-    #l = open(filename, 'r')
-    #for link in l:
-    #    link_list.append(link.strip())
-        
     ## provide url and wait after opening
     driver.get(target_link)
 
@@ -83,9 +78,20 @@ def scrape(target_link):
 
 ## PRINT PRODUCT INFO
 #  iterate through length of the list to print models and sku
+#  create nested list for csv
+
+    csv_data = []
+
+    csv_data.append(["Model number","SKU", "Manu. Name", "Sale price", "Original price", "Processor Manu.", "Misc. Info"])
     for i in range(len(model_list)):
-        f.write(f'{model_list[i] : <29} | {sku_list[i] : <7} | {name_list[i][0] : <15} | {price_list[i] : >9} | {original_price_list[i] : >9} | {' '.join(name_list[i][2:-3])}\n')
-        f.write(f'{"-" * 225}\n')
+        if "Intel" in ' '.join(name_list[i][2:-3]):
+            processor = "Intel"
+        if "AMD" in ' '.join(name_list[i][2:-3]):
+            processor = "AMD"
+        csv_data.append([model_list[i], sku_list[i], name_list[i][0], price_list[i], original_price_list[i], processor, ' '.join(name_list[i][2:-3])])
+    with open('bestbuyclearancescrape.csv', 'w', newline = '') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerows(csv_data)
         
 ########################################################################################################
 
